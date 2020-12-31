@@ -1,0 +1,17 @@
+.spotify-button {
+  border: 1px solid green;
+  color: green;
+  padding: 2.5px;
+  cursor: pointer;
+  display: inline-block;
+}
+
+body {
+  padding: 5%
+}
+
+#heading_logo {
+  float: right;
+  font-family: sans-serif;
+  font-size: 5vh;
+}
