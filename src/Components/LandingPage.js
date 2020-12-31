@@ -3,7 +3,7 @@ import './../App.css';
 
 function LandingPage() {
     return (
-        <div>Logged in</div>
+        <div>Logged in to system</div>
     );
 }
 
