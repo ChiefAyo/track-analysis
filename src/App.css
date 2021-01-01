@@ -1,7 +1,7 @@
 .spotify-button {
   border: 1px solid green;
   color: green;
-  padding: 2.5px;
+  padding: 1.5vh;
   cursor: pointer;
   display: inline-block;
   text-decoration: none;
@@ -11,11 +11,15 @@
   -webkit-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
   font-size: 3vh;
+  background: none;
+  font-family: sans-serif;
+   
 }
 
 body {
-  padding: 5%
-  
+  padding: 5%;
+  /* background-image: url("E:/Development/WEB/spotify-track-analysis/src/resources/bg.jpg");
+  background-color: #000000; */
 }
 
 #heading_logo {

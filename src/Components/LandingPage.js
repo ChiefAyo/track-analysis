@@ -4,7 +4,9 @@ import './../App.css';
 class LandingPage extends Component {
     constructor() {
         super();
-        
+        this.state = {
+
+        }
     }
 
 

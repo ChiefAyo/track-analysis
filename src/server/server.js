@@ -127,11 +127,18 @@ const setInitialAccessToken = (code) => {
  * Function to reset the access token every hour
  */
 const resetToken = async () => {
-    const data = await spotifyAPI.refreshAccessToken();
-    const newToken = data.body['access_token']
-
-    console.log('access token refreshed, new token is:', newToken)
-    spotifyAPI.setAccessToken(accessRefresh)
+    await spotifyAPI.refreshAccessToken().then(data => {
+        const newToken = data.body['access_token']
+        console.log('access token refreshed, new token is:', newToken)
+        spotifyAPI.setAccessToken(accessRefresh)
+    
+    })
+    .catch(error => {
+        console.log("Unable to refresh the token \n Reason: ", error.message);
+    })
 }
+
+
+
 
 
