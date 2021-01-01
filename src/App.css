@@ -4,14 +4,23 @@
   padding: 2.5px;
   cursor: pointer;
   display: inline-block;
+  text-decoration: none;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  font-size: 3vh;
 }
 
 body {
   padding: 5%
+  
 }
 
 #heading_logo {
   float: right;
   font-family: sans-serif;
   font-size: 5vh;
+  
 }
