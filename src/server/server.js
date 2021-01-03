@@ -23,7 +23,7 @@ const clientSecret = process.env.SPOTAPI_SECRET;
 
 //connect to spotify api
 var spotifyAPI = new SpotifyWebApi({
-    redirectUri: 'http://localhost:8888/home',
+    redirectUri: 'http://localhost:3000/home',
     clientId: clientId,
     clientSecret: clientSecret
 });
@@ -50,7 +50,7 @@ const generateURL = async () => {
     let authURL = "https://accounts.spotify.com/authorize?";
     authURL += encodeURIComponent(`client_id=${clientId}`);
     authURL += '&response_type=code';
-    authURL += encodeURIComponent('&redirect_uri=http://localhost:8888/home');
+    authURL += encodeURIComponent('&redirect_uri=http://localhost:3000/home');
     authURL += encodeURIComponent(`&state=${state}`);
     //remove blank space from end of scopeString with .trim()
     authURL += encodeURIComponent(`&scope=${scopeString.trim()}`)
@@ -85,6 +85,7 @@ app.get('/home', (req, res) => {
     const code = req.query.code;
     const state = req.query.state;
 
+    
 
     if (!error) {
         if (!spotifyAPI.getAccessToken()) {
@@ -94,6 +95,13 @@ app.get('/home', (req, res) => {
                 }, 60 * 60 * 1000)
             }
         }
+
+        let response = {
+            granted: true,
+            info: "Access has been granted"
+        }
+
+        res.send(response);
 
     } else {
         console.log("Error trying to authenticate");
