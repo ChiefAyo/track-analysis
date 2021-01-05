@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import './../App.css';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import Sidebar from './Sidebar';
 
 class LandingPage extends Component {
     constructor() {
@@ -10,24 +12,29 @@ class LandingPage extends Component {
         }
     }
 
-    componentDidMount(){
-        axios.get('/home') 
+    componentDidMount() {
+        axios.get('/home')
             .then(response => {
                 console.log(response);
 
                 let grantedStatus = response.data.granted;
-                this.setState({granted:grantedStatus})
+                this.setState({ granted: grantedStatus })
             }).catch(error => {
                 console.log("Error: \n", error);
             })
-        
+
     }
 
 
     render() {
         return (
-            
-            <div>Logged in to system</div>
+            <Router>
+                <Sidebar />
+                <Switch>
+                <div>Logged in to system</div>
+                <Route path = '/'/>
+                </Switch>
+            </Router>
         );
     }
 }
