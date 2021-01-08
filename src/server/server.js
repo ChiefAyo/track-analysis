@@ -92,13 +92,27 @@ app.get('/home', (req, res) => {
             if (setInitialAccessToken(code)) {
                 setInterval(async () => {
                     resetToken();
+                    console.log("Access token reset")
                 }, 60 * 60 * 1000)
             }
         }
 
+        //TODO send name to client scripts to show up when the user logs in
+        var displayName;
+        axios({
+            url: "https://api.spotify.com.v1/me",
+            method: 'GET',
+            headers: {
+                "Authorization" : `Bearer ${spotifyAPI.getAccessToken()}`
+            }
+        }) .then((response) => {
+            displayName = response.display_name;
+        })
+
         let response = {
             granted: true,
-            info: "Access has been granted"
+            info: "Access has been granted",
+            name: displayName
         }
 
         res.send(response);

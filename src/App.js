@@ -9,7 +9,7 @@ function App() {
   return (
     <Router>
       <div className="app-container">
-        <div id="heading_logo">Title</div>
+        <div id="heading-logo">Title</div>
         <Switch>
           <Route path="/" exact component={AuthenticateButton} />
           <Route path="/home" component={LandingPage} />

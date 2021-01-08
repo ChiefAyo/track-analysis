@@ -3,6 +3,7 @@ import axios from 'axios';
 import './../App.css';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import Sidebar from './Sidebar';
+import AuthenticateButton from './AuthenticateButton';
 
 class LandingPage extends Component {
     constructor() {
@@ -18,7 +19,8 @@ class LandingPage extends Component {
                 console.log(response);
 
                 let grantedStatus = response.data.granted;
-                this.setState({ granted: grantedStatus })
+                let displayName = response.data.name
+                this.setState({ granted: grantedStatus, name: displayName})
             }).catch(error => {
                 console.log("Error: \n", error);
             })
@@ -27,15 +29,27 @@ class LandingPage extends Component {
 
 
     render() {
-        return (
-            <Router>
-                <Sidebar />
-                <Switch>
-                <div>Logged in to system</div>
-                <Route path = '/'/>
-                </Switch>
-            </Router>
-        );
+
+        if (!this.state.granted) {
+            let status;
+            return (
+                <>
+                    <div>Not currently logged in, please log in</div>
+                    <AuthenticateButton />
+                </>
+            );
+        } else {
+
+            return (
+                <Router>
+                    <Sidebar />
+                    <Switch>
+                        <div>Hi there {this.state.name}!</div>
+                        <Route exact path='/home' component={this} />
+                    </Switch>
+                </Router>
+            );
+        }
     }
 }
 

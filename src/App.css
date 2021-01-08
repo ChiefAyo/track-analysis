@@ -28,11 +28,11 @@ body {
   
 }
 
-#heading_logo {
+#heading-logo {
   float: right;
   font-family: sans-serif;
   font-size: 5vh;
-  
+  position: relative;
 }
 
 .navbar {
@@ -44,21 +44,23 @@ body {
 }
 
 .menu-bars {
-  margin-left: 2rem;
-  font-size: 2rem;
+  margin-left: 2vw;
+  font-size: 4vh;
   background: none;
 }
 
 .side-menu {
   background-color: black;
-  width: 250px;
+  width: 18vw;
   height: 100vh;
   display: flex;
   justify-content: center;
   position: fixed;
   top: auto;
+  bottom:auto;
   left: -100%;
   transition: 850ms;
+  padding: inherit;
   
 }
 
