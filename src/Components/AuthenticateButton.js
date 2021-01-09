@@ -1,9 +1,12 @@
 import React from 'react';
 import './../App.css';
+import { Link, BrowserRouter as Router } from 'react-router-dom';
 
 function AuthenticateButton() {
     return (
-        <a href = "http://localhost:8888/login" class = "spotify-button">Allow access</a>
+        <Router>
+            <a href="http://localhost:8888/login" className="spotify-button">Allow access</a>
+        </Router>
     );
 }
 

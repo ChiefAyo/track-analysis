@@ -46,6 +46,7 @@ var state = 'sth536d'
 
 var authoriseURL = spotifyAPI.createAuthorizeURL(scopes, state, true);
 
+// used as a test to make sure api was actually working
 const generateURL = async () => {
     let authURL = "https://accounts.spotify.com/authorize?";
     authURL += encodeURIComponent(`client_id=${clientId}`);
@@ -78,17 +79,23 @@ app.get('/login', (req, res) => {
     }
 });
 
-//gets data from the callback including the access token
+//gets data from the callback including the auth code
 app.get('/home', (req, res) => {
-    const error = req.query.error;
+
+    console.log(`Request: ${req.query}`)
+    let result = req.query;
+
+    const error = result.error;
     //auth code for access token
-    const code = req.query.code;
-    const state = req.query.state;
+    const code = result.code;
+    const state = result.state;
+
+    
 
     
 
     if (!error) {
-        if (!spotifyAPI.getAccessToken()) {
+        if (typeof spotifyAPI.getAccessToken() == 'undefined') {
             if (setInitialAccessToken(code)) {
                 setInterval(async () => {
                     resetToken();
@@ -96,6 +103,8 @@ app.get('/home', (req, res) => {
                 }, 60 * 60 * 1000)
             }
         }
+
+        console.log(`Access token: ${spotifyAPI.getAccessToken()}`)
 
         //TODO send name to client scripts to show up when the user logs in
         var displayName;
@@ -127,8 +136,9 @@ app.get('/home', (req, res) => {
 
 // sets the access token once the user has been authorised
 const setInitialAccessToken = (code) => {
+    console.log(`Code: ${code}`);
     spotifyAPI.authorizationCodeGrant(code)
-        .then(data => {
+        .then(function(data)  {
             let accessTk = data.body['access_token'];
             let accessRefresh = data.body['refresh_token'];
             spotifyAPI.setAccessToken(accessTk);
@@ -141,7 +151,7 @@ const setInitialAccessToken = (code) => {
             console.log('Error trying to retrieve token:');
             console.log(error);
             //res.send
-            return;
+            return false;
         })
 }
 
