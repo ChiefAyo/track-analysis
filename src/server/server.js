@@ -2,17 +2,18 @@ const express = require('express')
 const path = require('path');
 require('dotenv').config({ path: __dirname + '/./../../.env' });
 const axios = require('axios');
+const bodyParser = require('body-parser')
 
 const app = express();
 const port = process.env.PORT || 8888;
+// var jsonParser = bodyParser.json();
 
 var SpotifyWebApi = require('spotify-web-api-node');
 
 
-
+//var urlEncodedPrser = bodyParser.urlencoded({extended: false})
 
 //logs fact that server is runninig and starts the server
-app.listen(port, () => console.log(`Listening on port: ${port}`));
 
 app.get('/express_backend', (req, res) => {
     res.send({ express: "EXPRESS BACKEND IS CONNECTED TO REACT" })
@@ -30,6 +31,7 @@ var spotifyAPI = new SpotifyWebApi({
 
 spotifyAPI.setClientId(clientId);
 
+// permissions given to applicaiton
 const scopes = [
     "user-read-recently-played",
     "user-top-read",
@@ -42,9 +44,11 @@ const scopes = [
 var scopeString;
 scopes.forEach(scope => scopeString += (scope + ' '))
 
-var state = 'sth536d'
+var state = 'sth536d';
 
 var authoriseURL = spotifyAPI.createAuthorizeURL(scopes, state, true);
+console.log("Authorise url: " + authoriseURL + "\n");
+
 
 // used as a test to make sure api was actually working
 const generateURL = async () => {
@@ -82,7 +86,10 @@ app.get('/login', (req, res) => {
 //gets data from the callback including the auth code
 app.get('/home', (req, res) => {
 
-    console.log(`Request: ${req.query}`)
+    //TODO sort out whatever is going wrong here, req is empty and
+    //stopping progress
+    console.log('Request: ');
+    console.log(req.query);
     let result = req.query;
 
     const error = result.error;
@@ -98,13 +105,13 @@ app.get('/home', (req, res) => {
         if (typeof spotifyAPI.getAccessToken() == 'undefined') {
             if (setInitialAccessToken(code)) {
                 setInterval(async () => {
-                    resetToken();
+                   await resetToken();
                     console.log("Access token reset")
                 }, 60 * 60 * 1000)
             }
         }
 
-        console.log(`Access token: ${spotifyAPI.getAccessToken()}`)
+        console.log(`Access token 1: ${spotifyAPI.getAccessToken()}`)
 
         //TODO send name to client scripts to show up when the user logs in
         var displayName;
@@ -171,6 +178,7 @@ const resetToken = async () => {
 }
 
 
+app.listen(port, () => console.log(`Listening on port: ${port}`));
 
 
 
