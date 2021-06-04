@@ -51,6 +51,10 @@ console.log("Authorise url: " + authoriseURL + "\n");
 
 
 // used as a test to make sure api was actually working
+/**
+ * Long form method for generating a URL without the api
+ * @returns the authorisation URL
+ */
 const generateURL = async () => {
     let authURL = "https://accounts.spotify.com/authorize?";
     authURL += encodeURIComponent(`client_id=${clientId}`);
