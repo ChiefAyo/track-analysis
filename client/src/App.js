@@ -5,7 +5,34 @@ import AuthenticateButton from './Components/AuthenticateButton';
 import LandingPage from './Components/LandingPage';
 
 
+
 function App() {
+
+/*   constructor(props) {
+    super(pros)
+  }
+
+  state = {
+    renderedResponse: ''
+  }
+
+  getResponse = async() => {
+    const response = await fetch('/api/hello')
+    const body = await response.json
+
+    if(response.status != 200) throw Error(body.message)
+
+    return body;
+  }
+
+  componentDidMount() {
+    this.getResponse()
+      .then(res => {
+        const someData = res;
+        this.setState({renderedResponse: someData});
+      })
+  } */
+
   return (
     <Router>
       <div className="app-container">

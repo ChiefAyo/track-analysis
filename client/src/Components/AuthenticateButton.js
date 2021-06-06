@@ -4,8 +4,9 @@ import { Link, BrowserRouter as Router } from 'react-router-dom';
 
 function AuthenticateButton() {
     return (
+        //TODO THIS IS ANNOYING AF!!
         <Router>
-            <a href="http://localhost:8888" className="spotify-button">Allow access</a>
+            <a href="http://localhost:8888/login" className="spotify-button">Allow access</a>
         </Router>
     );
 }

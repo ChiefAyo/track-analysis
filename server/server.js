@@ -6,6 +6,8 @@ const bodyParser = require('body-parser')
 
 const app = express();
 const port = process.env.PORT || 8888;
+
+app.use(bodyParser.json());
 // var jsonParser = bodyParser.json();
 
 var SpotifyWebApi = require('spotify-web-api-node');
@@ -24,7 +26,7 @@ const clientSecret = process.env.SPOTAPI_SECRET;
 
 //connect to spotify api
 var spotifyAPI = new SpotifyWebApi({
-    redirectUri: 'http://localhost:3000/home',
+    redirectUri: 'http://localhost:8888/home',
     clientId: clientId,
     clientSecret: clientSecret
 });
