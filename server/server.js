@@ -8,7 +8,7 @@ const app = express();
 const port = process.env.PORT || 8888;
 
 app.use(bodyParser.json());
-// var jsonParser = bodyParser.json();
+// var jsonParser = bodyParser.json();np
 
 var SpotifyWebApi = require('spotify-web-api-node');
 
