@@ -1,12 +1,21 @@
 import React from 'react';
 import './../App.css';
 import { Link, BrowserRouter as Router } from 'react-router-dom';
+import axios from 'axios';
 
 function AuthenticateButton() {
+
+    let goToAuth = () =>{
+        console.log("Authenticating")
+        axios.get('/login')
+            .then(res => {
+                //TODO Need to send request to login, then return to here landing page after
+            })
+    }
     return (
         //TODO THIS IS ANNOYING AF!!
         <Router>
-            <a href="http://localhost:3000/login" className="spotify-button">Allow access</a>
+            <button onClick={goToAuth} className="spotify-button">Allow access</button>
         </Router>
     );
 }
