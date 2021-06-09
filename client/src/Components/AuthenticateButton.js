@@ -1,17 +1,19 @@
-import React from 'react';
+import React, { useCallback, useEffect } from 'react';
 import './../App.css';
 import { Link, BrowserRouter as Router } from 'react-router-dom';
 import axios from 'axios';
 
-function AuthenticateButton() {
-
-    let goToAuth = () =>{
+function AuthenticateButton(props) {
+    
+    const goToAuth = async () =>{
         console.log("Authenticating")
-        axios.get('/login')
+        await axios.get('/login')
             .then(res => {
                 //TODO Need to send request to login, then return to here landing page after
+                
             })
     }
+
     return (
         //TODO THIS IS ANNOYING AF!!
         <Router>
