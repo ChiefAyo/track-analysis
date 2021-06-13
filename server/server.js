@@ -1,6 +1,6 @@
 const express = require('express')
 const path = require('path');
-require('dotenv').config({ path: __dirname + '/./../../.env' });
+require('dotenv').config({ path: __dirname + '/./../.env' });
 const axios = require('axios');
 const bodyParser = require('body-parser')
 
@@ -32,6 +32,7 @@ var spotifyAPI = new SpotifyWebApi({
 });
 
 spotifyAPI.setClientId(clientId);
+console.log("ID: ", clientId)
 
 // permissions given to applicaiton
 const scopes = [
@@ -61,7 +62,7 @@ const generateURL = async () => {
     let authURL = "https://accounts.spotify.com/authorize?";
     authURL += encodeURIComponent(`client_id=${clientId}`);
     authURL += '&response_type=code';
-    authURL += encodeURIComponent('&redirect_uri=http://localhost:3000/home');
+    authURL += encodeURIComponent('&redirect_uri=http://localhost:8888/home');
     authURL += encodeURIComponent(`&state=${state}`);
     //remove blank space from end of scopeString with .trim()
     authURL += encodeURIComponent(`&scope=${scopeString.trim()}`)

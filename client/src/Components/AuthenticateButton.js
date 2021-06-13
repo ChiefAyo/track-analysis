@@ -5,12 +5,14 @@ import axios from 'axios';
 
 function AuthenticateButton(props) {
     
+
+    //let redirect = 
     const goToAuth = async () =>{
         console.log("Authenticating")
         await axios.get('/login')
             .then(res => {
                 //TODO Need to send request to login, then return to here landing page after
-                console.log(res)
+                console.log("Response: ",res)
             })
     }
 
