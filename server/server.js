@@ -1,11 +1,17 @@
 const express = require('express')
+const cors = require('cors')
 const path = require('path');
 require('dotenv').config({ path: __dirname + '/./../.env' });
 const axios = require('axios');
 const bodyParser = require('body-parser')
 
+
 const app = express();
 const port = process.env.PORT || 8888;
+
+// TODO shortcut for cors not working, maybe try longer full method instead
+// https://stackoverflow.com/questions/18310394/no-access-control-allow-origin-node-apache-port-issue
+app.use(cors());
 
 app.use(bodyParser.json());
 // var jsonParser = bodyParser.json();np
@@ -60,7 +66,7 @@ console.log("Authorise url: " + authoriseURL + "\n");
  */
 const generateURL = async () => {
     let authURL = "https://accounts.spotify.com/authorize?";
-    authURL += encodeURIComponent(`client_id=${clientId}`);
+    authURL += encodeURIComponent(`&client_id=${clientId}`);
     authURL += '&response_type=code';
     authURL += encodeURIComponent('&redirect_uri=http://localhost:8888/home');
     authURL += encodeURIComponent(`&state=${state}`);
@@ -71,6 +77,7 @@ const generateURL = async () => {
     return authURL;
 }
 
+console.log('URL: ', generateURL())
 
 // redirect user to authorisation link
 app.get('/login', (req, res) => {
@@ -82,7 +89,9 @@ app.get('/login', (req, res) => {
     //console.log(clientId);
     try {
 
-        res.redirect(authoriseURL)
+        console.log("Attempting redirect")
+        res.redirect(authoriseURL,)
+        
 
     } catch (error) {
         console.log("Error trying to log in to Spotify: \n");
