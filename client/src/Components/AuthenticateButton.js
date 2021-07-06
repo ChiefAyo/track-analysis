@@ -5,10 +5,10 @@ import axios from 'axios';
 
 //require('dotenv').config({ path: __dirname + '/./../.env' });
 
-let redirect = "http://localhost:8888/home"
-let scope = ""
+//let redirect = "http://localhost:8888/authorised"
+
 //TODO Not able to get variable from environment variable
-const AUTHORSISATION = `https://accounts.spotify.com/authorize?&client_id=${process.env.REACT_APP_SPOTAPI_ID}&response_type=code&redirect_uri=${redirect}&scope=user-read-recently-played%20user-top-read%20playlist-modify-public%20user-read-currently-playing%20user-follow-read%20user-library-read`
+const AUTHORSISATION = `https://accounts.spotify.com/authorize?&client_id=${process.env.REACT_APP_SPOTAPI_ID}&response_type=code&show_dialog=true&redirect_uri=${process.env.REACT_APP_REDIRECT}&scope=user-read-recently-played%20user-top-read%20playlist-modify-public%20user-read-currently-playing%20user-follow-read%20user-library-read`
 
 function AuthenticateButton(props) {
     

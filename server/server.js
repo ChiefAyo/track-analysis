@@ -32,7 +32,7 @@ const clientSecret = process.env.SPOTAPI_SECRET;
 
 //connect to spotify api
 var spotifyAPI = new SpotifyWebApi({
-    redirectUri: 'http://localhost:8888/home',
+    redirectUri: 'http://localhost:8888/auth_done',
     clientId: clientId,
     clientSecret: clientSecret
 });
@@ -68,7 +68,7 @@ const generateURL = async () => {
     let authURL = "https://accounts.spotify.com/authorize?";
     authURL += encodeURIComponent(`&client_id=${clientId}`);
     authURL += '&response_type=code';
-    authURL += encodeURIComponent('&redirect_uri=http://localhost:8888/home');
+    authURL += encodeURIComponent('&redirect_uri=http://localhost:8888/auth_done');
     authURL += encodeURIComponent(`&state=${state}`);
     //remove blank space from end of scopeString with .trim()
     authURL += encodeURIComponent(`&scope=${scopeString.trim()}`)
@@ -99,6 +99,11 @@ app.get('/login', (req, res) => {
     }
 });
 
+app.get('/auth_done', (req, res) =>{
+    console.log("Authorised")
+    res.redirect("http://localhost:3000/home")
+})
+
 //gets data from the callback including the auth code
 app.get('/home', (req, res) => {
 
@@ -112,9 +117,6 @@ app.get('/home', (req, res) => {
     //auth code for access token
     const code = result.code;
     const state = result.state;
-
-    
-
     
 
     if (!error) {
@@ -148,6 +150,7 @@ app.get('/home', (req, res) => {
         }
 
         res.send(response);
+        res.redirect("http://localhost:3000/home")
 
     } else {
         console.log("Error trying to authenticate");
