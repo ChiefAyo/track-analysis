@@ -4,6 +4,8 @@ const path = require('path');
 require('dotenv').config({ path: __dirname + '/./../.env' });
 const axios = require('axios');
 const bodyParser = require('body-parser')
+const url = require('url')
+
 
 
 const app = express();
@@ -99,43 +101,48 @@ app.get('/login', (req, res) => {
     }
 });
 
+let spotRes
 app.get('/auth_done', (req, res) =>{
+
+    spotRes = req
     console.log("Authorised")
+    // console.log(req)
     res.redirect("http://localhost:3000/home")
 })
 
 //gets data from the callback including the auth code
 app.get('/home', (req, res) => {
 
+
     //TODO sort out whatever is going wrong here, req is empty and
     //stopping progress
     console.log('Request: ');
-    console.log(req.query);
-    let result = req.query;
+    console.log(spotRes.query);
+    let result = spotRes.query;
 
-    const error = result.error;
+    const error = result.error; 
     //auth code for access token
     const code = result.code;
     const state = result.state;
     
+    // console.log(spotifyAPI.getAccessToken())
 
-    if (!error) {
-        if (typeof spotifyAPI.getAccessToken() == 'undefined') {
-            if (setInitialAccessToken(code)) {
-                setInterval(async () => {
-                   await resetToken();
-                    console.log("Access token reset")
-                }, 60 * 60 * 1000)
-            }
+    if (!error && spotRes) {
+        
+        if (setInitialAccessToken(code)) {
+            setInterval(async () => {
+                await resetToken();
+                console.log("Access token reset")
+            }, 60 * 60 * 1000)
         }
 
         console.log(`Access token 1: ${spotifyAPI.getAccessToken()}`)
 
         //TODO send name to client scripts to show up when the user logs in
-        var displayName;
+        var displayName
         axios({
             url: "https://api.spotify.com.v1/me",
-            method: 'GET',
+            method: 'POST',
             headers: {
                 "Authorization" : `Bearer ${spotifyAPI.getAccessToken()}`
             }
@@ -149,8 +156,17 @@ app.get('/home', (req, res) => {
             name: displayName
         }
 
-        res.send(response);
-        res.redirect("http://localhost:3000/home")
+        //res.send(response);
+        //res.redirect("http://localhost:3000/home")
+        const home_url = new URL("https://localhost:3000")
+        res.redirect(home_url.format({
+            pathname: "home",
+            query: {
+                "granted": true,
+                "info": "Access has been granted",
+                "name": displayName
+            }
+        }));
 
     } else {
         console.log("Error trying to authenticate");
