@@ -20,6 +20,32 @@ app.use(bodyParser.json());
 
 var SpotifyWebApi = require('spotify-web-api-node');
 
+app.post('/login', (req, res) => {
+
+    const code = req.body.code
+    const error = req.body.error
+
+
+    let tokens = setInitialAccessToken(code);
+
+    res.json({
+        access_token:tokens.access_token,
+        refresh_token:tokens.refresh_token,
+        expires_in:tokens.expires_in
+    })
+    .catch(error => {
+        console.log(error);
+        res.sendStatus(400)
+    })
+
+})
+
+app.post('/refresh', (req, res) => {
+    const refreshTk = req.body.refreshTk
+
+    SpotifyWebApi.setRefreshToken(refreshTk);
+    resetToken()
+})
 
 //var urlEncodedPrser = bodyParser.urlencoded({extended: false})
 
@@ -34,13 +60,12 @@ const clientSecret = process.env.SPOTAPI_SECRET;
 
 //connect to spotify api
 var spotifyAPI = new SpotifyWebApi({
-    redirectUri: 'http://localhost:8888/auth_done',
+    redirectUri: 'http://localhost:3000',
     clientId: clientId,
     clientSecret: clientSecret
 });
 
-spotifyAPI.setClientId(clientId);
-console.log("ID: ", clientId)
+
 
 // permissions given to applicaiton
 const scopes = [
@@ -50,6 +75,8 @@ const scopes = [
     "user-read-currently-playing",
     "user-follow-read",
     "user-library-read",
+    "user-read-private",
+    "user-read-email"
 ]
 
 var scopeString;
@@ -82,26 +109,26 @@ const generateURL = async () => {
 console.log('URL: ', generateURL())
 
 // redirect user to authorisation link
-app.get('/login', (req, res) => {
-    //console.log(authoriseURL);
-    // generateURL()
-    // .then(url => {
-    //     res.redirect(url);
-    // })
-    //console.log(clientId);
-    try {
+// app.get('/login', (req, res) => {
+//     //console.log(authoriseURL);
+//     // generateURL()
+//     // .then(url => {
+//     //     res.redirect(url);
+//     // })
+//     //console.log(clientId);
+//     try {
 
-        console.log("Attempting redirect")
-        res.redirect(authoriseURL,)
+//         console.log("Attempting redirect")
+//         res.redirect(authoriseURL,)
         
 
-    } catch (error) {
-        console.log("Error trying to log in to Spotify: \n");
-        console.log(error);
-    }
-});
+//     } catch (error) {
+//         console.log("Error trying to log in to Spotify: \n");
+//         console.log(error);
+//     }
+// });
 
-let spotRes
+var spotRes
 app.get('/auth_done', (req, res) =>{
 
     spotRes = req
@@ -128,27 +155,34 @@ app.get('/home', (req, res) => {
     // console.log(spotifyAPI.getAccessToken())
 
     if (!error && spotRes) {
-        
-        if (setInitialAccessToken(code)) {
-            setInterval(async () => {
-                await resetToken();
-                console.log("Access token reset")
-            }, 60 * 60 * 1000)
+    
+        async () => {
+
+            if (await setInitialAccessToken(code)) {
+                setInterval(async () => {
+                    await resetToken();
+                    console.log("Access token reset")
+                }, 60 * 60 * 1000)
+            }
         }
 
         console.log(`Access token 1: ${spotifyAPI.getAccessToken()}`)
 
-        //TODO send name to client scripts to show up when the user logs in
-        var displayName
+        var displayName 
         axios({
-            url: "https://api.spotify.com.v1/me",
-            method: 'POST',
+            url: "https://api.spotify.com/v1/me",
+            method: 'GET',
             headers: {
                 "Authorization" : `Bearer ${spotifyAPI.getAccessToken()}`
             }
-        }) .then((response) => {
+        }) .then(response => {
             displayName = response.display_name;
         })
+        .catch(error => {
+            console.log("Error trying to get display name: ")
+            console.log(error)
+        })
+        // TODO problem with axios, potentially spotify link is wrong ?? 
 
         let response = {
             granted: true,
@@ -159,14 +193,19 @@ app.get('/home', (req, res) => {
         //res.send(response);
         //res.redirect("http://localhost:3000/home")
         const home_url = new URL("https://localhost:3000")
-        res.redirect(home_url.format({
-            pathname: "home",
-            query: {
-                "granted": true,
-                "info": "Access has been granted",
-                "name": displayName
-            }
-        }));
+        home_url.pathname = "/home"
+        home_url.searchParams.append("granted", "true")
+        home_url.searchParams.append("info", "access granted")
+        home_url.searchParams.append("name", displayName)
+        // res.redirect(home_url.format({
+        //     pathname: "home",
+        //     query: {
+        //         "granted": true,
+        //         "info": "Access has been granted",
+        //         "name": displayName
+        //     }
+        // }));
+        res.redirect(home_url.href)
 
     } else {
         console.log("Error trying to authenticate");
@@ -174,6 +213,7 @@ app.get('/home', (req, res) => {
         res.send("Error From callback: ", error)
         return;
     }
+    
 })
 
 // sets the access token once the user has been authorised
@@ -183,17 +223,24 @@ const setInitialAccessToken = (code) => {
         .then(function(data)  {
             let accessTk = data.body['access_token'];
             let accessRefresh = data.body['refresh_token'];
+            let expiresIn = data.body['expires_in']
             spotifyAPI.setAccessToken(accessTk);
             spotifyAPI.setRefreshToken(accessRefresh);
             console.log(`Access token: ${accessTk} \n Refresh token: ${accessRefresh}`);
 
-            return true;
+            let tokens = {
+                access_token:accessTk,
+                refresh_token:accessRefresh,
+                expires_in:expiresIn
+            }
+
+            return tokens;
         }
         ).catch(error => {
             console.log('Error trying to retrieve token:');
             console.log(error);
             //res.send
-            return false;
+            return {};
         })
 }
 

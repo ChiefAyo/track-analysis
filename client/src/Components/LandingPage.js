@@ -1,56 +1,39 @@
-import React, { Component } from 'react';
+import React from 'react';
 import axios from 'axios';
 import './../App.css';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import AuthenticateButton from './AuthenticateButton';
+import useAuth from "./useAuth";
+import SpotifyWebApi from 'spotify-web-api-node';
 
-class LandingPage extends Component {
-    constructor() {
-        super();
-        this.state = {
-            granted: false
-        }
-    }
+const spotifyApi = new SpotifyWebApi({
+    clientId:process.env.SPOTAPI_ID
+})
 
-    componentDidMount() {
-        axios.get('/home')
-            .then(response => {
-                console.log(response);
+export default function LandingPage(props) {
+    
+    const accessTk = useAuth(props.code)
+    // componentDidMount() {
+    //     axios.get('/home')
+    //         .then(response => {
+    //             console.log(response);
 
-                let grantedStatus = response.data.granted;
-                let displayName = response.data.name
-                this.setState({ granted: grantedStatus, name: displayName})
-            }).catch(error => {
-                console.log("Error: \n", error);
-            })
+    //             let grantedStatus = response.data.granted;
+    //             let displayName = response.data.name
+    //             this.setState({ granted: grantedStatus, name: displayName})
+    //         }).catch(error => {
+    //             console.log("Error: \n", error);
+    //         })
 
-    }
+    // }
 
-
-    render() {
-
-        if (!this.state.granted) {
-            let status;
-            return (
-                <>
-                    <div>Not currently logged in, please log in</div>
-                    <AuthenticateButton />
-                </>
-            );
-        } else {
-
-            return (
-                <Router>
-                    <Sidebar />
-                    <Switch>
-                        <div>Hi there {this.state.name}!</div>
-                        <Route exact path='/home' component={this} />
-                    </Switch>
-                </Router>
-            );
-        }
-    }
+        return (
+            <Router>
+                <Sidebar />
+                
+            </Router>
+        );
+        //}
+    
 }
-
-export default LandingPage;
