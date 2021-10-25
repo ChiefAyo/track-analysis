@@ -18,13 +18,14 @@ export default function useAuth(code) {
             setRefreshTk(res.data.refresh_token)
             setExpiresIn(res.data.expires_in)
             window.history.pushState({}, null, "/")
-        }).catch(() => {window.location = "/"})
+        }).catch((error) => /* {window.location = "/"} */ {console.log("Error: ",error)})
     }, [code])
 
     useEffect(() => {
-        const timeout = setInterval(() => {
 
-            if (!refreshTk || !expiresIn) return;
+        if (!refreshTk || !expiresIn) return;
+        const timeout = setInterval(() => {
+            
             axios.post('http://localhost:8888/refresh', {
                 refreshTk
             }).then(res => {

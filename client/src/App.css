@@ -20,14 +20,19 @@
   font-size: 3vh;
   background: none;
   font-family: sans-serif;
+  border-radius: 10px;
    
+}
+
+.spotify-button:hover {
+  background: green;
+  color: white;
 }
 
 body {
   padding: 5%;
   background-color: #212121;
-  
-  
+
 }
 
 #heading-logo {
@@ -36,6 +41,7 @@ body {
   font-size: 5vh;
   position: relative;
   color: white;
+  margin: 5px;
 }
 
 .navbar {
@@ -112,4 +118,18 @@ body {
 
 .side-menu-items span {
   margin-left: 16px
+}
+
+.name-section {
+  margin-top: 15px;
+  position: relative;
+}
+
+.user-info {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 20px;
+  color: white;
 }

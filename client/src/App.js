@@ -18,7 +18,7 @@ function App() {
       <div className="app-container">
         <div id="heading-logo">Title</div>
         <Switch>
-          {code ? <Route path="/" exact element={<LandingPage code={code}/>} /> : <Route path="/" exact component={AuthenticateButton} />}
+          {code ? <Route path="/home" exact element={<LandingPage code={code}/>} /> : <Route path="/" exact component={AuthenticateButton} />}
         </Switch>
         {code ? <LandingPage code={code}/> : <AuthenticateButton />}
       </div>

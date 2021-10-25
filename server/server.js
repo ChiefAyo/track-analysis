@@ -11,8 +11,7 @@ const url = require('url')
 const app = express();
 const port = process.env.PORT || 8888;
 
-// TODO shortcut for cors not working, maybe try longer full method instead
-// https://stackoverflow.com/questions/18310394/no-access-control-allow-origin-node-apache-port-issue
+
 app.use(cors());
 
 app.use(bodyParser.json());
@@ -20,30 +19,70 @@ app.use(bodyParser.json());
 
 var SpotifyWebApi = require('spotify-web-api-node');
 
+const clientId = process.env.SPOTAPI_ID;
+const clientSecret = process.env.SPOTAPI_SECRET;
+
+//connect to spotify api
+var spotifyAPI = new SpotifyWebApi({
+    redirectUri: 'http://localhost:3000',
+    clientId: clientId,
+    clientSecret: clientSecret
+});
+
+
 app.post('/login', (req, res) => {
 
     const code = req.body.code
     const error = req.body.error
 
 
-    let tokens = setInitialAccessToken(code);
+    //setInitialAccessToken(code, res);
+   
+    console.log(`Code: ${code}`);
+    spotifyAPI.authorizationCodeGrant(code)
+        .then(function (data) {
+            let accessTk = data.body['access_token'];
+            let accessRefresh = data.body['refresh_token'];
+            let expiresIn = data.body['expires_in']
+            spotifyAPI.setAccessToken(accessTk);
+            spotifyAPI.setRefreshToken(accessRefresh);
+            console.log(`Access token: ${accessTk} \n Refresh token: ${accessRefresh}`);
 
-    res.json({
-        access_token:tokens.access_token,
-        refresh_token:tokens.refresh_token,
-        expires_in:tokens.expires_in
-    })
-    .catch(error => {
-        console.log(error);
-        res.sendStatus(400)
-    })
+            let tokens = {
+                access_token: accessTk,
+                refresh_token: accessRefresh,
+                expires_in: expiresIn
+            }
 
+            console.log(tokens);
+
+            res.json({
+
+                access_token: tokens.access_token,
+                refresh_token: tokens.refresh_token,
+                expires_in: tokens.expires_in
+
+            })
+
+
+            return tokens;
+        }
+        ).catch(error => {
+            console.log('Error trying to retrieve token:');
+            console.log(error);
+            //res.send
+            return {};
+        })
+
+
+   
 })
 
 app.post('/refresh', (req, res) => {
     const refreshTk = req.body.refreshTk
 
-    SpotifyWebApi.setRefreshToken(refreshTk);
+    //TODO this method doesn't seem to exist in the api
+    spotifyAPI.setRefreshToken(refreshTk)
     resetToken()
 })
 
@@ -55,15 +94,6 @@ app.get('/express_backend', (req, res) => {
     res.send({ express: "EXPRESS BACKEND IS CONNECTED TO REACT" })
 })
 
-const clientId = process.env.SPOTAPI_ID;
-const clientSecret = process.env.SPOTAPI_SECRET;
-
-//connect to spotify api
-var spotifyAPI = new SpotifyWebApi({
-    redirectUri: 'http://localhost:3000',
-    clientId: clientId,
-    clientSecret: clientSecret
-});
 
 
 
@@ -108,25 +138,6 @@ const generateURL = async () => {
 
 console.log('URL: ', generateURL())
 
-// redirect user to authorisation link
-// app.get('/login', (req, res) => {
-//     //console.log(authoriseURL);
-//     // generateURL()
-//     // .then(url => {
-//     //     res.redirect(url);
-//     // })
-//     //console.log(clientId);
-//     try {
-
-//         console.log("Attempting redirect")
-//         res.redirect(authoriseURL,)
-        
-
-//     } catch (error) {
-//         console.log("Error trying to log in to Spotify: \n");
-//         console.log(error);
-//     }
-// });
 
 var spotRes
 app.get('/auth_done', (req, res) =>{
@@ -141,7 +152,6 @@ app.get('/auth_done', (req, res) =>{
 app.get('/home', (req, res) => {
 
 
-    //TODO sort out whatever is going wrong here, req is empty and
     //stopping progress
     console.log('Request: ');
     console.log(spotRes.query);
@@ -182,7 +192,6 @@ app.get('/home', (req, res) => {
             console.log("Error trying to get display name: ")
             console.log(error)
         })
-        // TODO problem with axios, potentially spotify link is wrong ?? 
 
         let response = {
             granted: true,
@@ -217,32 +226,6 @@ app.get('/home', (req, res) => {
 })
 
 // sets the access token once the user has been authorised
-const setInitialAccessToken = (code) => {
-    console.log(`Code: ${code}`);
-    spotifyAPI.authorizationCodeGrant(code)
-        .then(function(data)  {
-            let accessTk = data.body['access_token'];
-            let accessRefresh = data.body['refresh_token'];
-            let expiresIn = data.body['expires_in']
-            spotifyAPI.setAccessToken(accessTk);
-            spotifyAPI.setRefreshToken(accessRefresh);
-            console.log(`Access token: ${accessTk} \n Refresh token: ${accessRefresh}`);
-
-            let tokens = {
-                access_token:accessTk,
-                refresh_token:accessRefresh,
-                expires_in:expiresIn
-            }
-
-            return tokens;
-        }
-        ).catch(error => {
-            console.log('Error trying to retrieve token:');
-            console.log(error);
-            //res.send
-            return {};
-        })
-}
 
 /**
  * Function to reset the access token every hour
